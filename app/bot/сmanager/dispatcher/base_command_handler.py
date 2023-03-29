@@ -73,10 +73,11 @@ class BaseCommandHandler:
             return True
         except Exception:
             _, ex, tb = sys.exc_info()
+            error_text = "\n"
 
             for text in traceback.format_tb(tb):
-                logging.error(text)
+                error_text += text
 
-            logging.error(f"\n{ex}\n")
+            logging.error(error_text + f"{ex}")
 
             return False
