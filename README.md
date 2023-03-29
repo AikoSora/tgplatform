@@ -1,8 +1,8 @@
 <h1 align="center">
-VKdeo
+TPlatform
 </h1>
 <p align="center">
-Бот для скачивания видео с ВК
+Платформа для разработки Telegram ботов
 <br /><br />
 <img alt="Python3.8" src="https://img.shields.io/badge/Python-3.8-blue">
 <img alt="Django4.1.1" src="https://img.shields.io/badge/Django-4.1.1-brightgreen">
@@ -10,16 +10,13 @@ VKdeo
 <img alt="Aiogram2.22.1" src="https://img.shields.io/badge/Aiogram-2.22.1-blue">
 </p>
 
-## Взаимодействие с ботом
-Сам [бот](http://t.me/vkdeo_bot)
-<br />
-
 ## Установка и запуск
 Сначала создадим виртуальное окружение и установим зависимости
 ```shell
 python3 -m venv env
 source env/bin/activate
-python -m pip install requirements.txt
+python -m pip install pipenv
+pipenv install
 ```
 После нужно провести миграцию моделей для создания базы данных
 ```shell

@@ -10,11 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.0/ref/settings/
 """
 
+from pathlib import Path
 import os
-from dotenv import load_dotenv
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -22,8 +22,6 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = 'm&!s@8am7b!@e(pl6qt7(os^bqje9-bqhmk()yokj*hr2s-!5a'
-
-load_dotenv(os.path.join(BASE_DIR, '.env'))
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -73,7 +71,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'tgbot.asgi.application'
+WSGI_APPLICATION = 'tgbot.wsgi.application'
 
 
 # Database
@@ -127,4 +125,4 @@ STATIC_URL = '/static/'
 
 
 # Telegram Bot - Settings
-BOT_TOKEN = os.getenv("TOKEN")
+BOT_TOKEN = ""
