@@ -30,11 +30,12 @@ class BaseCommandHandler:
         self.command_with_args = with_args
         self.command_function = function
 
-    def register_data(self, name, path_args, user, bot):
+    def register_data(self, object, name, path_args, user, bot):
         """
         Function for register event data
         """
 
+        self.object = object
         self.name = name
         self.path_args = path_args
         self.user = user
@@ -60,11 +61,11 @@ class BaseCommandHandler:
             return True
         return self.command_dialog == self.user.dialog
 
-    async def execute(self, event_object):
+    async def execute(self):
         try:
             create_task(
                 self.command_function(
-                    event_object,
+                    self.object,
                     self.path_args,
                     self.user,
                     self.bot
@@ -81,3 +82,6 @@ class BaseCommandHandler:
             logging.error(error_text + f"{ex}")
 
             return False
+
+    def __lt__(self, other):
+        return len(self.command_name) > len(other.command_name)

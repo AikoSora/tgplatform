@@ -16,7 +16,8 @@ class CallBackCommandHandler(BaseCommandHandler):
     ------------------------
     """
 
-    def register_data(self, path_args, user, bot):
+    def register_data(self, object, path_args, user, bot):
+        self.object = object
         self.path_args = path_args
         self.user = user
         self.bot = bot

@@ -23,13 +23,14 @@ class CallBackHandler(BaseEventHandler):
 
         for command in self.commands:
             command.register_data(
+                object=object,
                 path_args=self.path_args,
                 user=self.user,
                 bot=self.bot
             )
 
             if command.allowed_name():
-                if not await command.execute(object):
+                if not await command.execute():
                     await self.object.bot.answer_callback_query(
                         callback_query_id=object.id,
                         text='❌ Возникла ошибка при обработке события',

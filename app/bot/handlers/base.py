@@ -16,7 +16,7 @@ class BaseEventHandler:
 
     def __new__(cls, commands, bot):
         instance = super().__new__(cls)
-        instance.commands = commands
+        instance.commands = sorted(commands)
         instance.bot = bot
         return instance
 

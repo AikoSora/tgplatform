@@ -25,6 +25,7 @@ class MessageHandler(BaseEventHandler):
         if not self.is_menu_command(self.command_name):
             for command in self.commands:
                 command.register_data(
+                    object=message,
                     name=self.command_name,
                     path_args=self.path_args,
                     user=self.user,
@@ -32,7 +33,7 @@ class MessageHandler(BaseEventHandler):
                 )
 
                 if command.allowed_name() and command.allowed_dialog():
-                    if not await command.execute(message):
+                    if not await command.execute():
                         await self.message.reply(
                             "❌ Произошла <b>системная</b> ошибка. Выйдите в меню и попробуйте <b>ещё раз</b>.",
                             parse_mode='HTML'

@@ -1,13 +1,8 @@
 <h1 align="center">
-TPlatform
+TGPlatform
 </h1>
 <p align="center">
 Платформа для разработки Telegram ботов
-<br /><br />
-<img alt="Python3.8" src="https://img.shields.io/badge/Python-3.8-blue">
-<img alt="Django4.1.1" src="https://img.shields.io/badge/Django-4.1.1-brightgreen">
-<img alt="Uvloop0.17.0" src="https://img.shields.io/badge/uvloop-0.17.0-blue">
-<img alt="Aiogram2.22.1" src="https://img.shields.io/badge/Aiogram-2.22.1-blue">
 </p>
 
 ## Установка и запуск
