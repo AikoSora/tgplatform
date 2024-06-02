@@ -24,7 +24,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'm&!s@8am7b!@e(pl6qt7(os^bqje9-bqhmk()yokj*hr2s-!5a'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = bool(int(os.getenv('DEBUG', '0')))
 
 ALLOWED_HOSTS = []
 
@@ -103,6 +103,38 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
+# Logging
+# https://docs.djangoproject.com/en/4.2/topics/logging/
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'verbose',
+        },
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console', ],
+            'level': 'INFO',
+            'propagate': False,
+        },
+        'root': {
+            'handlers': ['console', ],
+            'level': 'INFO',
+            'propagate': False,
+        },
+    },
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/3.0/topics/i18n/
@@ -125,4 +157,5 @@ STATIC_URL = '/static/'
 
 
 # Telegram Bot - Settings
-BOT_TOKEN = ""
+API_TOKEN = os.getenv('API_TOKEN')
+TEST_MODE = bool(int(os.getenv('IS_TEST_MODE_ENABLED', '0')))

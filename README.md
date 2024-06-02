@@ -17,11 +17,15 @@ pipenv install
 ```shell
 python manage.py migrate
 ```
-Теперь в файле [settings](tgbot/settings.py) в самом низу укажем токен который можно получить [здесь](https://t.me/BotFather)
+Теперь нужно заполнить [example.env](example.env) в корне, после переименовать в .env
 <br />
+
+Получить API_TOKEN можно [здесь](https://t.me/BotFather)
+
+
 После можно запустить бота
 ```shell
-python manage.py startbot
+python manage.py start_bot
 ```
 
 ## Команды

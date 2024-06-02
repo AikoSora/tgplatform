@@ -12,7 +12,7 @@ class MessageHandler(BaseEventHandler):
     async def __call__(self, message: Message):
 
         self.message = message
-        self.message_from = message["from"]
+        self.message_from = self.message.from_user
         self.command_name, self.path_args = self.text_processing(self.message.text)
 
         self.user = await self.get_or_create_user(
@@ -21,6 +21,9 @@ class MessageHandler(BaseEventHandler):
             last_name=self.message_from.last_name,
             username=self.message_from.username
         )
+
+        self.user.as_(self.bot)
+        self.user.peer_id = self.user.tg_id
 
         if not self.is_menu_command(self.command_name):
             for command in self.commands:

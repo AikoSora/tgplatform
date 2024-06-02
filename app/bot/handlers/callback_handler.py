@@ -21,6 +21,9 @@ class CallBackHandler(BaseEventHandler):
             username=self.message_from.username
         )
 
+        self.user.as_(self.bot)
+        self.user.peer_id = self.user.tg_id
+
         for command in self.commands:
             command.register_data(
                 object=object,
@@ -31,14 +34,14 @@ class CallBackHandler(BaseEventHandler):
 
             if command.allowed_name():
                 if not await command.execute():
-                    await self.object.bot.answer_callback_query(
+                    await object.bot.answer_callback_query(
                         callback_query_id=object.id,
                         text='❌ Возникла ошибка при обработке события',
                         show_alert=True
                     )
                 break
         else:
-            await self.object.answer_callback_query(
+            await object.answer_callback_query(
                 callback_query_id=object.id,
                 text='❌ Неизвестный запрос',
                 show_alert=True

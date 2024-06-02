@@ -47,7 +47,8 @@ class BaseCommandHandler:
 
         @return -> bool
         """
-        if self.command_with_args:
+
+        if self.command_with_args and len(self.path_args) > 0:
             return self.command_name in ['', self.path_args[0]]
         return self.command_name in ['', self.name]
 
@@ -61,15 +62,18 @@ class BaseCommandHandler:
             return True
         return self.command_dialog == self.user.dialog
 
+    def get_function(self):
+        return self.command_function(
+            self.object,
+            self.path_args,
+            self.user,
+            self.bot
+        )
+
     async def execute(self):
         try:
             create_task(
-                self.command_function(
-                    self.object,
-                    self.path_args,
-                    self.user,
-                    self.bot
-                )
+                self.get_function()
             )
             return True
         except Exception:
@@ -85,3 +89,8 @@ class BaseCommandHandler:
 
     def __lt__(self, other):
         return len(self.command_name) > len(other.command_name)
+
+    def __str__(self):
+        return f"<EventHandler> command: {self.command_name}"
+
+    __repr__ = __str__

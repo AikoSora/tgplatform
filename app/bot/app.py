@@ -1,47 +1,107 @@
-import os
+from aiogram import Bot, Dispatcher
+from aiogram.client.session.aiohttp import AiohttpSession
+from aiogram.client.telegram import TEST, PRODUCTION
 
-import asyncio
+from .filters import ChatTypeFilter
+from .routes import routes
+from .handlers import (
+    MessageHandler,
+    CallBackHandler,
+)
+
+from typing import TYPE_CHECKING
+from os import environ
+from asyncio import get_event_loop
+
 import logging
 
-from aiogram import Bot, Dispatcher, executor, types
-from app.models import Account
-from .сmanager import load_all_commands, message_commands, callback_commands
-from .handlers import *
+if TYPE_CHECKING:
+    from asyncio import AbstractEventLoop
 
 
-class TelegramBot:
-    def __init__(self, token, **kwargs):
+class Application:
+    messages = []
+    callbacks = []
+    supergroups = []
+    inlinequerys = []
 
-        os.environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
+    def __init__(
+        self,
+        *args,
+        token: str,
+        debug: bool = False,
+        test_mode: bool = False,
+        loop: 'AbstractEventLoop' = None,
+        **kwargs,
+    ) -> None:
 
-        self.set_logger(logging.INFO)
-        self.__set_uvloop_policy()
+        environ["DJANGO_ALLOW_ASYNC_UNSAFE"] = "true"
 
-        load_all_commands()
-        self.__execute_start(token)
+        self.loop = loop or get_event_loop()
+        self.logger = logging.getLogger(__name__)
 
-    def set_logger(self, level):
-        logging.basicConfig(level=level, format="(%(asctime)s) [%(levelname)s]: %(message)s")
+        self.__debug = debug
+        self.__test_mode = test_mode
+        self.__token = token
 
-    def __set_uvloop_policy(self):
-        """Function to set uvloop policy"""
-        try:
-            import uvloop
+        if self.__debug is True:
+            logging.basicConfig(level=logging.DEBUG)
 
-            if not isinstance(asyncio.get_event_loop_policy(), uvloop.EventLoopPolicy):
-                asyncio.set_event_loop_policy(uvloop.EventLoopPolicy())
+        self.load_commands()
 
-        except ModuleNotFoundError:
-            logging.warn("Uvloop not installed! (pip install uvloop)")
+        self.__initialize()
 
-    def __execute_start(self, token):
-        """Function to start the bot"""
-        self.__bot = Bot(token=token)
-        self.__dp = Dispatcher(self.__bot)
+    def get_aiogram_bot_object(self) -> Bot:
+        session = AiohttpSession(api=TEST if self.__test_mode else PRODUCTION)
 
-        Account.TempData.bot = self.__bot
+        return Bot(
+            token=self.__token,
+            session=session,
+        )
 
-        self.__dp.register_message_handler(MessageHandler(message_commands, self.__bot))
-        self.__dp.register_callback_query_handler(CallBackHandler(callback_commands, self.__bot))
+    def __initialize(self):
+        """Function to initialize bot"""
 
-        executor.start_polling(self.__dp, skip_updates=True)
+        self.__bot = self.get_aiogram_bot_object()
+        self.__dp = Dispatcher()
+
+        me = self.loop.run_until_complete(
+            self.__bot.get_me()
+        )
+
+        self.__dp.message.register(
+            MessageHandler(self.messages, self.__bot, me.username).__call__,
+            ChatTypeFilter("private"),
+        )
+
+        self.__dp.callback_query.register(
+            CallBackHandler(self.callbacks, self.__bot, me.username).__call__,
+        )
+
+    async def _run(self):
+        """
+        Deleting not handled updates and run bot
+        """
+
+        await self.__bot.delete_webhook(drop_pending_updates=True)
+        await self.__dp.start_polling(self.__bot, handle_signals=False)
+
+    def start_polling(self):
+        """
+        Start main polling
+        """
+
+        self.loop.run_until_complete(
+            self._run()
+        )
+
+    def load_commands(self):
+        for route in routes:
+
+            for command in route.messages:
+                self.messages.append(command)
+
+            for command in route.callbacks:
+                self.callbacks.append(command)
+
+            self.logger.info(f'{route.name} is loaded')

@@ -1,4 +1,4 @@
-from app.models import Account
+from app.models import User
 from re import split as re_split
 from typing import Tuple
 
@@ -14,13 +14,16 @@ class BaseEventHandler:
     @bot -> Aiogram Bot
     """
 
-    def __new__(cls, commands, bot):
+    def __new__(cls, commands, bot, username):
         instance = super().__new__(cls)
+
         instance.commands = sorted(commands)
         instance.bot = bot
+        instance.username = username
+
         return instance
 
-    def text_processing(self, text: str) -> Tuple[str, list]:
+    def text_processing(self, text: str | None) -> Tuple[str, list]:
         """
         ---------------------------
         Function for clearing text
@@ -29,6 +32,9 @@ class BaseEventHandler:
 
         return: Tuple [ string, list ]
         """
+        if text is None:
+            return ('', '')
+
         processed_name = text.lower().strip()
         path_args = re_split(r'\s+', processed_name)
 
@@ -64,14 +70,16 @@ class BaseEventHandler:
 
         return: Account model
         """
-        return Account.objects.get_or_create(
-            user_id=user_id,
+        user = await User.objects.aget_or_create(
+            tg_id=user_id,
             defaults={
-                'first_name': first_name,
-                'last_name': last_name,
-                'username': username
+                'tg_first_name': first_name,
+                'tg_last_name': last_name,
+                'tg_username': username
             }
-        )[0]
+        )
+
+        return user[0]
 
     def __str__(self) -> str:
         return "(EHO) Event Handler Object"
